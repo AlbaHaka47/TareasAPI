@@ -1,0 +1,11 @@
+{
+  "name": "TareasAPI",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -k -n BACKEND,FRONTEND -c blue,green \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
