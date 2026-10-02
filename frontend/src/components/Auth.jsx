@@ -3,12 +3,17 @@ import { useState } from 'react';
 import axios from 'axios';
 
 function Auth({ onLogin }) {
-
+    const[modo, setModo] = useState("login");
 
     const [nombre, setNombre] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [mensaje, setMensaje] = useState('');
+
+    const cambiarModo = (nuevoModo) => {
+        setModo(nuevoModo);
+        setMensaje("");
+    }
 
     const iniciarSesion = async (e) => {
         e.preventDefault();
@@ -74,133 +79,153 @@ function Auth({ onLogin }) {
     };
 
     return (
-    <main>
-      <form onSubmit={iniciarSesion}>
-        
-        <h2>Iniciar Sesión</h2>
+        <main>
+            <form onSubmit={modo === "login ? iniciarSesion : registrarUsuario"}>
+                <div className = {`auth-toggle ${modo}`}>
+                    <div className="box"></div>
+                    <button
+                        type="button"
+                        className={modo === "login" ? "active" : ""}
+                        onClick={() => cambiarModo("login")}
+                    >
+                        Iniciar Sesión
+                    </button>
+                    <button
+                        type="button"
+                        className={modo === "register" ? "active" : ""}
+                        onClick={() => cambiarModo("register")}
+                    >
+                        Crear Cuenta
+                    </button>
+                </div>
 
-          {mensaje && <p className="mensaje">{mensaje}</p>}
-        <div className="authInput">
-            <label htmlFor="email">Correo Electrónico</label>
-            <input
-                id="email"
-                type="email"
-                placeholder="✉️usuario@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-            />
-        </div>
-        
-        <div className="authInput">
-            <label htmlFor="password">Contraseña</label>
-            <input
-                id="password"
-                type="password"
-                placeholder="🔒 ••••••••••••  👁️"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-        
-        <div className="agreerecovery">
-            <div className="agree">
-                <input
-                id="recordarme"
-                type= "checkbox"
-                name="recordarme"
-                />
-                <label htmlFor="recordarme">Recordarme</label>
+                { modo === "login" ? (
+                    <>
+                        <h2>Iniciar Sesión</h2>
 
-            </div>
-            <p>¿Olvidaste tu clave?</p>
-        </div>
+                        {mensaje && <p className="mensaje">{mensaje}</p>}
+                        <div className="authInput">
+                            <label htmlFor="email">Correo Electrónico</label>
+                            <input
+                                id="email"
+                                type="email"
+                                placeholder="✉️usuario@email.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </div>
+                        
+                        <div className="authInput">
+                            <label htmlFor="password">Contraseña</label>
+                            <input
+                                id="password"
+                                type="password"
+                                placeholder="🔒 ••••••••••••  👁️"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </div>
+                        
+                        <div className="agreerecovery">
+                            <div className="agree">
+                                <input
+                                    id="recordarme"
+                                    type= "checkbox"
+                                    name="recordarme"
+                                />
+                                <label htmlFor="recordarme">Recordarme</label>
 
-        <button className="submit" type="submit">
-          Iniciar Sesión
-        </button>
-        
-        <section className="RSSAuth">
-            <article>
-                <div className="linias"></div>
-                    <hr/>
-                    <p>O CONTUNÚA CON</p>
-                    <hr/>
-                <div className="linias"></div>
-            </article>
-            <article>
-                <button>Google</button>
-                <button>GitHub</button>
-            </article>
-        </section>
-      </form>
+                            </div>
+                            <p>¿Olvidaste tu clave?</p>
+                        </div>
 
-        <form onSubmit={registrarUsuario}>
+                        <button className="submit" type="submit">
+                            Iniciar Sesión
+                        </button>
+                        
+                        <section className="RSSAuth">
+                            <article>
+                                <div className="linias"></div>
+                                    <hr/>
+                                    <p>O CONTUNÚA CON</p>
+                                    <hr/>
+                                <div className="linias"></div>
+                            </article>
+                            <article>
+                                <button>Google</button>
+                                <button>GitHub</button>
+                            </article>
+                        </section>
+                    </>
+                ) : (
+                    <>
+                        <h2>Crear cuenta</h2>
 
-      <h2>Crear cuenta</h2>
+                        <div className="authInput">
+                            <label htmlFor="name">Nombre Completo</label>
+                            <input
+                                id="name"
+                                type="text"
+                                value={nombre}
+                                onChange={(e) => setNombre(e.target.value)}
+                            />
+                        </div>
+                    
+                        <div className="authInput">
+                            <label htmlFor="email">Correo Electrónico</label>
+                            <input
+                                id="email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </div>
+                    
+                        <div className="authInput">
+                            <label htmlFor="password">Contraseña</label>
+                            <input
+                                id="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </div>
+                    
+                        
+                        <div className="agree">
+                            <input type="checkbox" name="agree" id="agree" />
+                            <label htmlFor="agree">Acepto los terminos y condiciones</label>
+                        </div> 
+                        
 
-        <div className="authInput">
-            <label htmlFor="name">Nombre Completo</label>
-            <input
-                id="name"
-                type="text"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-            />
-        </div>
-      
-        <div className="authInput">
-            <label htmlFor="email">Correo Electrónico</label>
-            <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-            />
-        </div>
-      
-        <div className="authInput">
-            <label htmlFor="password">Contraseña</label>
-            <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
-        </div>
-      
-        
-        <div className="agree">
-            <input type="checkbox" name="agree" id="agree" />
-            <label htmlFor="agree">Acepto los terminos y condiciones</label>
-        </div> 
-        
+                        <button className="submit" type="submit">
+                            Crear Cuenta
+                        </button>
 
-      <button className="submit" type="submit">
-        Crear Cuenta
-      </button>
+                        {mensaje && (
+                            <p>{mensaje}</p>
+                        )}
 
-      {mensaje && (
-        <p>{mensaje}</p>
-      )}
+                        <section className="RSSAuth">
+                            <article>
+                                <div className="linias"></div>
+                                <hr/>
+                                <p>O CONTUNÚA CON</p>
+                                <hr/>
+                                <div className="linias"></div>
+                            </article>
+                            <article>
+                                <button> <i className="pi pi-google"></i>Google</button>
+                                <button>GitHub</button>
+                            </article>
+                        </section>
+                    </>
+                
+                )}
+            </form>
+        </main>
 
-        <section className="RSSAuth">
-            <article>
-                <div className="linias"></div>
-                <hr/>
-                <p>O CONTUNÚA CON</p>
-                <hr/>
-                <div className="linias"></div>
-            </article>
-            <article>
-                <button> <i className="pi pi-google"></i>Google</button>
-                <button>GitHub</button>
-            </article>
-        </section>
-    </form>
-  
-    </main>
-
-  );
+    );
 
   
 }
