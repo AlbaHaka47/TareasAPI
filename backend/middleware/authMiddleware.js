@@ -1,49 +1,26 @@
 const jwt = require('jsonwebtoken');
 
+function obtenerToken(req) {
+    if (req.cookies.token) return req.cookies.token;
+
+    const [tipo, valor] = (req.headers.authorization || '').split(' ');
+    return tipo === 'Bearer' && valor ? valor : null;
+}
+
 function verificarToken(req, res, next) {
+    const token = obtenerToken(req);
 
-    const authHeader = req.headers.authorization;
-    const tokenCookie = req.cookies.token;
-
-    // Buscar el token en la cookie o en Authorization
-    let token;
-
-    if (tokenCookie) {
-        token = tokenCookie;
-    } else if (authHeader) {
-
-        const partes = authHeader.split(' ');
-
-        if (partes.length !== 2 || partes[0] !== 'Bearer' || !partes[1]) {
-            return res.status(401).json({
-                mensaje: 'Formato de autorización inválido'
-            });
-        }
-
-        token = partes[1];
-
-    } else {
-        return res.status(401).json({
-            mensaje: 'No se proporcionó un token'
-        });
+    if (!token) {
+        return res.status(401).json({ mensaje: 'No autenticado' });
     }
-    
+
     try {
-
-        const usuario = jwt.verify(
-            token,
-            process.env.JWT_SECRET
-        );
-
-        req.usuario = usuario;
-
-        next();
-
-    } catch (error) {
-
-        return res.status(401).json({
-            mensaje: 'Token inválido o expirado'
+        req.usuario = jwt.verify(token, process.env.JWT_SECRET, {
+            algorithms: ['HS256']
         });
+        next();
+    } catch (error) {
+        return res.status(401).json({ mensaje: 'Token inválido o expirado' });
     }
 }
 

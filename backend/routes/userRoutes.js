@@ -1,173 +1,124 @@
 const express = require('express');
 const verificarToken = require('../middleware/authMiddleware');
-const db = require('../db');
+
+const { pool: db } = require('../db');
+
 const router = express.Router();
 
-router.get('/perfil', verificarToken, (req, res) => {
+// Todas las rutas de este archivo exigen estar autenticado
+router.use(verificarToken);
 
-    const usuarioId = req.usuario.id;
 
-    const sql = `
-        SELECT id, nombre, email
-        FROM usuarios
-        WHERE id = ?
-    `;
+function errorServidor(res, error, mensaje) {
+    console.error(error);
+    return res.status(500).json({ mensaje });
+}
 
-    db.query(sql, [usuarioId], (error, resultados) => {
 
-        if (error) {
+// Obtener el perfil del usuario autenticado
+router.get('/perfil', async (req, res) => {
+    try {
+        const usuarioId = req.usuario.id;
 
-            console.error(error);
+        const sql = `
+            SELECT id, nombre, email
+            FROM usuarios
+            WHERE id = ?
+        `;
 
-            return res.status(500).json({
-                mensaje: 'Error al obtener el perfil'
-            });
-        }
+        const [usuarios] = await db.query(sql, [usuarioId]);
 
-        if (resultados.length === 0) {
-
-            return res.status(404).json({
-                mensaje: 'Usuario no encontrado'
-            });
+        if (usuarios.length === 0) {
+            return res.status(404).json({ mensaje: 'Usuario no encontrado' });
         }
 
         res.json({
             mensaje: 'Perfil obtenido correctamente',
-            usuario: resultados[0]
+            usuario: usuarios[0]
         });
-    });
+    } catch (error) {
+        errorServidor(res, error, 'Error al obtener el perfil');
+    }
 });
 
-router.put('/perfil', verificarToken, (req, res) => {
 
-    const { nombre, email } = req.body;
-    const usuarioId = req.usuario.id;
+// Actualizar nombre y email del usuario autenticado
+router.put('/perfil', async (req, res) => {
+    try {
+        const { nombre, email } = req.body;
+        const usuarioId = req.usuario.id;
 
-    if (typeof nombre !== 'string' || nombre.trim() === '') {
-        return res.status(400).json({
-            mensaje: 'El nombre es obligatorio y debe ser un texto'
-        });
-    }
-
-    if (typeof email !== 'string' || email.trim() === '') {
-        return res.status(400).json({
-            mensaje: 'El email es obligatorio y debe ser un texto'
-        });
-    }
-
-    const sql = `
-        UPDATE usuarios
-        SET nombre = ?, email = ?
-        WHERE id = ?
-    `;
-
-    db.query(
-        sql,
-        [nombre, email, usuarioId],
-        (error, resultado) => {
-
-            if (error) {
-
-                if (error.code === 'ER_DUP_ENTRY') {
-                    return res.status(409).json({
-                        mensaje: 'El email ya está registrado'
-                    });
-                }
-
-                console.error(error);
-
-                return res.status(500).json({
-                    mensaje: 'Error al actualizar el usuario'
-                });
-            }
-
-            res.json({
-                mensaje: 'Usuario actualizado correctamente'
-            });
-        }
-    );
-});
-
-// Eliminar la cuenta del usuario autenticado
-router.delete('/perfil', verificarToken, (req, res) => {
-
-    const usuarioId = req.usuario.id;
-
-    db.beginTransaction((error) => {
-
-        if (error) {
-            console.error(error);
-
-            return res.status(500).json({
-                mensaje: 'Error al iniciar la operación'
+        if (typeof nombre !== 'string' || nombre.trim() === '') {
+            return res.status(400).json({
+                mensaje: 'El nombre es obligatorio y debe ser un texto'
             });
         }
 
-        // Primero eliminamos las tareas del usuario
-        const sqlTareas = `
-            DELETE FROM tareas
-            WHERE usuario_id = ?
+        if (typeof email !== 'string' || email.trim() === '') {
+            return res.status(400).json({
+                mensaje: 'El email es obligatorio y debe ser un texto'
+            });
+        }
+
+        const sql = `
+            UPDATE usuarios
+            SET nombre = ?, email = ?
+            WHERE id = ?
         `;
 
-        db.query(sqlTareas, [usuarioId], (error) => {
+        const [resultado] = await db.query(sql, [nombre.trim(), email.trim(), usuarioId]);
 
-            if (error) {
-                return db.rollback(() => {
-                    console.error(error);
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+        }
 
-                    res.status(500).json({
-                        mensaje: 'Error al eliminar las tareas'
-                    });
-                });
-            }
+        res.json({ mensaje: 'Usuario actualizado correctamente' });
+    } catch (error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({ mensaje: 'El email ya está registrado' });
+        }
 
-            // Después eliminamos al usuario
-            const sqlUsuario = `
-                DELETE FROM usuarios
-                WHERE id = ?
-            `;
+        errorServidor(res, error, 'Error al actualizar el usuario');
+    }
+});
 
-            db.query(sqlUsuario, [usuarioId], (error, resultado) => {
 
-                if (error) {
-                    return db.rollback(() => {
-                        console.error(error);
+// Eliminar la cuenta del usuario autenticado
+router.delete('/perfil', async (req, res) => {
+    const usuarioId = req.usuario.id;
+    let connection;
 
-                        res.status(500).json({
-                            mensaje: 'Error al eliminar el usuario'
-                        });
-                    });
-                }
+    try {
+        // Reservamos UNA conexión del pool para toda la transacción
+        connection = await db.getConnection();
+        await connection.beginTransaction();
 
-                if (resultado.affectedRows === 0) {
-                    return db.rollback(() => {
-                        res.status(404).json({
-                            mensaje: 'Usuario no encontrado'
-                        });
-                    });
-                }
+        // Primero eliminamos las tareas del usuario
+        await connection.query('DELETE FROM tareas WHERE usuario_id = ?', [usuarioId]);
 
-                db.commit((error) => {
+        // Después eliminamos al usuario
+        const [resultado] = await connection.query('DELETE FROM usuarios WHERE id = ?', [usuarioId]);
 
-                    if (error) {
-                        return db.rollback(() => {
-                            console.error(error);
+        if (resultado.affectedRows === 0) {
+            await connection.rollback();
+            return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+        }
 
-                            res.status(500).json({
-                                mensaje: 'Error al confirmar la eliminación'
-                            });
-                        });
-                    }
+        await connection.commit();
 
-                    res.clearCookie('token');
+        res.clearCookie('token');
+        res.json({ mensaje: 'Cuenta eliminada correctamente' });
+    } catch (error) {
+        if (connection) {
+            await connection.rollback();
+        }
 
-                    res.json({
-                        mensaje: 'Cuenta eliminada correctamente'
-                    });
-                });
-            });
-        });
-    });
+        errorServidor(res, error, 'Error al eliminar la cuenta');
+    } finally {
+        if (connection) {
+            connection.release();
+        }
+    }
 });
 
 module.exports = router;

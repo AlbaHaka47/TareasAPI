@@ -1,32 +1,55 @@
+require('dotenv').config();
+
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const helmet = require('helmet');
+
+const { testConnection } = require('./db');
 const authRoutes = require('./routes/authRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const userRoutes = require('./routes/userRoutes');
-const verificarToken = require('./middleware/authMiddleware');
 
-const app = express()
-const port = 3000
+const app = express();
+const port = process.env.PORT || 3000;
 
-app.use(express.json());
-
+app.use(helmet());
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: process.env.CLIENT_URL || 'http://localhost:5173',
     credentials: true
 }));
 
+app.use(express.json());
 app.use(cookieParser());
+
+app.get('/api/health', (_req, res) => {
+    res.json({ status: 'ok' });
+});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
-app.use('/api', userRoutes);
+app.use('/api/users', userRoutes);
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+// 404 para rutas que no existen
+app.use((_req, res) => {
+    res.status(404).json({ mensaje: 'Ruta no encontrada' });
+});
 
-app.listen(port, () => {
-  console.log(`Example app listening on port http://localhost:${port}/`)
-})
+// Manejador global de errores
+app.use((err, _req, res, _next) => {
+    console.error(err);
+    const status = err.status || 500;
+    res.status(status).json({
+        mensaje: status === 500 ? 'Error interno del servidor' : err.mensaje
+    });
+});
 
+async function start() {
+    await testConnection();
+
+    app.listen(port, () => {
+        console.log(`Servidor escuchando en http://localhost:${port}`);
+    });
+};
+
+start();
