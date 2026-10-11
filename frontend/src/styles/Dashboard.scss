@@ -1,0 +1,43 @@
+@use 'variables' as *;
+
+// ---------- Estructura general: barra lateral + contenido ----------
+.dashboard {
+    display: grid;
+    grid-template-columns: 230px 1fr;
+    min-height: 100vh;
+    background-color: $bg;
+    color: $text;
+    font-family: $font;
+
+    // ---------- Zona de contenido ----------
+    .content {
+        display: flex;
+        flex-direction: column;
+        padding: 60px 50px;
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;;
+            gap: 25px;
+
+            &__eyebrow {
+                font-size: 10pt;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: $primary;
+            }
+
+            h1 {
+                font-size: 28pt;
+                font-weight: 600;
+            }
+
+            &__subtitle {
+                font-size: 12pt;
+                color: $muted;
+            }
+
+        }
+    }
+}

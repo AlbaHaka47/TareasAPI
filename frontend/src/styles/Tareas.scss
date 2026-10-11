@@ -1,0 +1,186 @@
+@use 'variables' as *;
+
+// ---------- Tareas: barra superior, filtros, crear y lista ----------
+.tasks-section {
+    display: flex;
+    flex-direction: column;
+    
+    
+    .tasks-toolbar {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+
+        button[type='button'] {
+            width: 15%;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            background: $primary;
+            color: $surface;
+            font-weight: 600;
+            cursor: pointer;
+            font: inherit;
+
+            &:hover {
+            background: $primary;
+            }
+
+
+            i {
+            font-size: 14pt;
+            }
+        }
+
+        .search {
+            position: relative;
+
+            i {
+                position: absolute;
+                left: 12px;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+            
+            
+            input {
+                width: 300%;
+                border-radius: 10px;                  
+                padding: 10px 35px;
+                border: none;
+                background-color: transparent;
+                box-shadow: 0px 0px 3px $primary;
+                transition: 0.5s ease-in-out;
+                outline: none;
+                font: inherit;
+                        
+                &:focus {
+                    transition: 0.2s ease-in-out;
+                    border-color: $primary;
+                    box-shadow: 0 0 0 3px rgba($primary, 0.5);
+                }
+            
+                &::placeholder {
+                    color: $muted;
+                }
+
+            }
+
+        }
+
+    }
+        
+    .tasks-summary {
+        padding: 10px;
+        color: $text;
+    }               
+    
+    .filters {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 14px;
+
+        button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            border: 1px solid $surface;
+            border-radius: 999px;
+            background: $surface;
+            color: #77758a;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s ease;
+
+            &:hover {
+                border-color: #c9c2ff;
+                color: $primary;
+            }
+
+            &.is-active {
+                border-color: $primary;
+                background: $surface;
+                color: $primary;
+                font-weight: 600;
+            }
+        }
+
+    }
+
+    //Crear Tarea
+    .create-task {
+        background: $surface;
+        box-shadow: 0 8px 24px rgba(35, 30, 70, 0.04);
+        display: flex;
+        flex-direction: column;
+        align-items: left;
+        border: 1px solid $surface;
+        border-radius: 18px;
+        padding: 20px 25px;
+        width: 50%;
+        margin: 10px;
+
+        h2 {
+            color: $text;
+            margin-bottom: 10px;
+        }
+
+        .taskInput {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            gap: 5px;
+            margin-bottom: 10px;
+
+            label {
+            font-size: 11pt;
+            font: inherit;
+            }
+
+            input {
+                border-radius: 5px;                    
+                padding: 5px 30px;
+                border: none;
+                background-color: transparent;
+                box-shadow: 0px 0px 3px $primary;
+                transition: 0.5s ease-in-out;
+                outline: none;
+                font: inherit;
+                        
+                &:focus {
+                    transition: 0.2s ease-in-out;
+                    border-color: $primary;
+                    box-shadow: 0 0 0 3px rgba($primary, 0.5);
+                }
+            }
+        }
+
+        button[type='submit'] {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            background: $primary;
+            color: $surface;
+            font-weight: 600;
+            cursor: pointer;
+            font: inherit;
+
+            &:hover {
+                background: $primary;
+            }
+        }
+    }
+
+
+    .task-list {
+        list-style: none;
+        background-color: $surface;
+        border: 1px solid $border;
+        border-radius: 15px;
+
+    }
+
+
+}

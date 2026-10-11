@@ -1,126 +1,58 @@
-import { useState, useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
-import "./assets/scss/body.scss"
+import './styles/body.scss';
 
-import axios from 'axios';
-import Header from './components/Header';
-import Auth from './components/Auth'
-import Perfil from './components/Perfil';
-import CrearTarea from './components/CrearTarea';
-import Tareas from './components/Tareas';
-import EditarPerfil from './components/EditarPerfil';
-import EliminarCuenta from './components/EliminarCuenta';
+import useSesion from './hooks/useSesion';
+import Home from './pages/Home';
+import Dashboard from './pages/Dashboard';
+import TareasPage from './pages/TareasPage';
+import CuentaPage from './pages/CuentaPage';
 
 function App() {
-  const [usuario, setUsuario] = useState(null);
-  const [vista, setVista] = useState('login');
-  const [seccionPerfil, setSeccionPerfil] = useState('datos');
+  const { usuario, setUsuario, cargando, cerrarSesion } = useSesion();
 
-  const cerrarSesion = async () => {
-      try {
-        await axios.post(
-          'http://localhost:3000/api/auth/logout',
-          {},
-          { withCredentials: true }
-
-        );
-
-        setUsuario(null);
-        setVista('login');
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-  useEffect(() => {
-  const comprobarSesion = async () => {
-    try {
-      const respuesta = await axios.get(
-        'http://localhost:3000/api/perfil',
-        { withCredentials: true }
-      );
-
-      setUsuario(respuesta.data.usuario);
-      setVista('tareas');
-    } catch (error) {
-      if (error.response?.status !== 401) {
-        console.error('Error al comprobar la sesión:', error);
-      }
-
-      setUsuario(null);
-    }
-  };
-
-  comprobarSesion();
-}, []);
-  
+  // Hasta saber si hay sesión, no decidimos a qué página redirigir
+  if (cargando) {
+    return <p>Cargando...</p>;
+  }
 
   return (
-    <div>
-      <Header
-        usuario={usuario}
-        cerrarSesion={cerrarSesion}
-        cambiarVista={setVista}
+    <Routes>
+      {/* Home: si ya hay sesión, va directo al dashboard */}
+      <Route
+        path="/"
+        element={
+          usuario
+            ? <Navigate to="/dashboard" replace />
+            : <Home onLogin={setUsuario} />
+        }
       />
 
+      {/* Dashboard: si no hay sesión, vuelve a la home */}
+      <Route
+        path="/dashboard"
+        element={
+          usuario
+            ? (
+              <Dashboard
+                usuario={usuario}
+                setUsuario={setUsuario}
+                cerrarSesion={cerrarSesion}
+              />
+            )
+            : <Navigate to="/" replace />
+        }
+      >
+        {/* Rutas hijas: se pintan dentro del <Outlet /> del Dashboard */}
+        <Route index element={<Navigate to="tareas" replace />} />
+        <Route path="tareas" element={<TareasPage />} />
+        <Route path="cuenta" element={<CuentaPage />} />
+      </Route>
 
-      {!usuario && (
-        <Auth
-          onLogin={(usuarioLogueado) => {
-            setUsuario(usuarioLogueado);
-            setVista('tareas');
-          }}
-        />       
-      )}
-
-      {usuario && vista === 'tareas' && (
-        <main className="dashboard">
-          <section className="dashboard-cabecera">
-            <div>
-              <h1>Mis tareas</h1>
-              <p>Organiza tu día, una tarea a la vez.</p>
-            </div>
-          </section>
-
-          <section className="dashboard-crear">
-            <CrearTarea />
-          </section>
-
-          <section className="dashboard-lista">
-            <Tareas />
-          </section>
-        </main>
-      )}
-
-      {usuario && vista === 'perfil' && (
-        <main>
-          <h1>Mi perfil</h1>
-
-          <nav>
-            <button onClick={() => setSeccionPerfil('datos')}>
-              Mis datos
-            </button>
-
-            <button onClick={() => setSeccionPerfil('editar')}>
-              Editar perfil
-            </button>
-
-            <button onClick={() => setSeccionPerfil('eliminar')}>
-              Eliminar cuenta
-            </button>
-          </nav>
-
-          {seccionPerfil === 'datos' && <Perfil />}
-
-          {seccionPerfil === 'editar' && (
-            <EditarPerfil onPerfilActualizado={setUsuario} />
-          )}
-
-          {seccionPerfil === 'eliminar' && <EliminarCuenta />}
-        </main>
-      )}
-    </div>
-    );
-  }
+      {/* Cualquier otra URL vuelve a la home */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
 
 export default App;
