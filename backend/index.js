@@ -13,6 +13,12 @@ const userRoutes = require('./routes/userRoutes');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// En producción hay un proxy (Render, Railway...) delante de tu app.
+// Sin esto, el limitador vería la IP del proxy y bloquearía a todos a la vez.
+if (process.env.NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+}
+
 app.use(helmet());
 app.use(cors({
     origin: process.env.CLIENT_URL || 'http://localhost:5173',
@@ -35,12 +41,15 @@ app.use((_req, res) => {
     res.status(404).json({ mensaje: 'Ruta no encontrada' });
 });
 
-// Manejador global de errores
+// Manejador global de errores (Express lo reconoce por tener 4 parámetros)
 app.use((err, _req, res, _next) => {
     console.error(err);
+
     const status = err.status || 500;
+
     res.status(status).json({
-        mensaje: status === 500 ? 'Error interno del servidor' : err.mensaje
+        // Los errores de Express traen el texto en "message", no en "mensaje"
+        mensaje: status === 500 ? 'Error interno del servidor' : err.message
     });
 });
 
@@ -50,6 +59,6 @@ async function start() {
     app.listen(port, () => {
         console.log(`Servidor escuchando en http://localhost:${port}`);
     });
-};
+}
 
 start();

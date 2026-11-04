@@ -1,166 +1,18 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { pool: db } = require('../db');
-const { body, validationResult } = require('express-validator');
+
+const { register, login, logout, me } = require('../controllers/authController');
+const verificarToken = require('../middleware/authMiddleware');
+const validar = require('../middleware/validar');
+const { limitarAuth } = require('../middleware/rateLimiters');
+const { validarRegistro, validarLogin } = require('../validators/authValidators');
 
 const router = express.Router();
 
-
-// REGISTRO
-router.post(
-    '/register',
-    body('email')
-        .isEmail()
-        .withMessage('El email no es válido'),
-
-    body('password')
-        .isLength({ min: 6 })
-        .withMessage('La contraseña debe tener al menos 6 caracteres'),
-
-    body('nombre')
-        .trim()
-        .notEmpty()
-        .withMessage('El nombre es obligatorio'),
-
-    async (req, res) => {
-        const errores = validationResult(req);
-
-        if (!errores.isEmpty()) {
-            return res.status(400).json({
-                errores: errores.array()
-            });
-        }
-
-        try {
-            const { nombre, email, password } = req.body;
-
-            const passwordHash = await bcrypt.hash(password, 10);
-
-            const sql = `
-                INSERT INTO usuarios (nombre, email, password)
-                VALUES (?, ?, ?)
-            `;
-
-            const [resultado] = await db.query(sql, [nombre, email, passwordHash]);
-
-            res.status(201).json({
-                mensaje: 'Usuario registrado correctamente',
-                usuarioId: resultado.insertId
-            });
-        } catch (error) {
-            if (error.code === 'ER_DUP_ENTRY') {
-                return res.status(409).json({
-                    mensaje: 'El email ya está registrado'
-                });
-            }
-
-            console.error(error);
-
-            res.status(500).json({
-                mensaje: 'Error al registrar usuario'
-            });
-        }
-    }
-);
-
-
-// LOGIN
-router.post(
-    '/login',
-
-    body('email')
-        .isEmail()
-        .withMessage('El email no es válido'),
-
-    body('password')
-        .notEmpty()
-        .withMessage('La contraseña es obligatoria'),
-
-    async (req, res) => {
-        const errores = validationResult(req);
-
-        if (!errores.isEmpty()) {
-            return res.status(400).json({
-                errores: errores.array()
-            });
-        }
-
-        try {
-            const { email, password } = req.body;
-
-            const [usuarios] = await db.query(
-                'SELECT * FROM usuarios WHERE email = ?',
-                [email]
-            );
-
-            if (usuarios.length === 0) {
-                return res.status(401).json({
-                    mensaje: 'Email o contraseña incorrectos'
-                });
-            }
-
-            const usuario = usuarios[0];
-
-            const passwordCorrecta = await bcrypt.compare(
-                password,
-                usuario.password
-            );
-
-            if (!passwordCorrecta) {
-                return res.status(401).json({
-                    mensaje: 'Email o contraseña incorrectos'
-                });
-            }
-
-            const token = jwt.sign(
-                {
-                    id: usuario.id,
-                    email: usuario.email
-                },
-                process.env.JWT_SECRET,
-                {
-                    expiresIn: '1h'
-                }
-            );
-
-            res.cookie('token', token, {
-                httpOnly: true,
-                secure: false,
-                sameSite: 'lax',
-                maxAge: 60 * 60 * 1000
-            });
-
-            res.json({
-                mensaje: 'Login correcto',
-                usuario: {
-                    id: usuario.id,
-                    nombre: usuario.nombre,
-                    email: usuario.email
-                }
-            });
-        } catch (error) {
-            console.error(error);
-
-            res.status(500).json({
-                mensaje: 'Error del servidor'
-            });
-        }
-    }
-);
-
-
-// LOGOUT
-router.post('/logout', (req, res) => {
-    res.clearCookie('token', {
-        httpOnly: true,
-        secure: false,
-        sameSite: 'lax'
-    });
-
-    res.json({
-        mensaje: 'Sesión cerrada correctamente'
-    });
-});
+// Este archivo solo dice "qué ruta ejecuta qué". La lógica vive en el controller.
+// Los middlewares se ejecutan de izquierda a derecha y cualquiera puede cortar la cadena.
+router.post('/register', limitarAuth, validarRegistro, validar, register);
+router.post('/login', limitarAuth, validarLogin, validar, login);
+router.post('/logout', logout);
+router.get('/me', verificarToken, me);
 
 module.exports = router;

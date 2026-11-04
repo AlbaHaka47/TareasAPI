@@ -1,0 +1,191 @@
+// Sustituye estos valores por las variables de tu paleta
+$acento: #4f46e5;
+$borde: #d9dce3;
+$texto: #1f2430;
+$suave: #5b6270;
+$fondo-suave: #f4f5f9;
+$peligro: #b42318;
+$peligro-fondo: #fef3f2;
+
+.cuenta-tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1.5rem;
+  padding: 0.25rem;
+  overflow-x: auto;
+  border-radius: 12px;
+  background: $fondo-suave;
+
+  &__tab {
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: $suave;
+    font: inherit;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover { color: $texto; }
+
+    &.is-active {
+      background: #fff;
+      color: $acento;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    &.is-danger.is-active { color: $peligro; }
+
+    &:focus-visible {
+      outline: 2px solid $acento;
+      outline-offset: 2px;
+    }
+  }
+}
+
+.cuenta-panel {
+  max-width: 560px;
+}
+
+.perfil-card {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid $borde;
+  border-radius: 14px;
+  background: #fff;
+
+  &__avatar {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    background: $acento;
+    color: #fff;
+    font-size: 1.75rem;
+    font-weight: 700;
+  }
+
+  &__datos {
+    display: grid;
+    gap: 1rem;
+    min-width: 0;
+    margin: 0;
+
+    dt {
+      color: $suave;
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    dd {
+      margin: 0.15rem 0 0;
+      overflow-wrap: anywhere;
+      color: $texto;
+      font-size: 1.05rem;
+    }
+  }
+}
+
+.cuenta-form {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.4rem;
+
+  label {
+    color: $texto;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  input {
+    padding: 0.7rem 0.85rem;
+    border: 1px solid $borde;
+    border-radius: 10px;
+    background: #fff;
+    color: $texto;
+    font: inherit;
+
+    &:focus {
+      border-color: $acento;
+      outline: 0;
+      box-shadow: 0 0 0 3px rgba($acento, 0.15);
+    }
+  }
+}
+
+.btn {
+  justify-self: start;
+  padding: 0.7rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $acento;
+    outline-offset: 2px;
+  }
+
+  &--primary { background: $acento; color: #fff; }
+  &--danger { background: $peligro; color: #fff; }
+  &--ghost { border-color: $borde; background: transparent; color: $texto; }
+}
+
+.zona-peligro {
+  padding: 1.5rem;
+  border: 1px solid #fecdca;
+  border-radius: 14px;
+  background: $peligro-fondo;
+
+  h2 { margin: 0 0 0.5rem; color: $peligro; font-size: 1.15rem; }
+  p { margin: 0 0 1.25rem; color: $suave; }
+
+  &__confirmar {
+    display: grid;
+    gap: 0.6rem;
+
+    input {
+      padding: 0.7rem 0.85rem;
+      border: 1px solid #fda29b;
+      border-radius: 10px;
+      font: inherit;
+    }
+  }
+
+  &__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.4rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .perfil-card { flex-direction: column; text-align: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cuenta-tabs__tab { transition: none; }
+}

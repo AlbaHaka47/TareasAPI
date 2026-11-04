@@ -1,13 +1,21 @@
 function Perfil({ usuario }) {
-  return (
-    <section>
-      <h2>Mi perfil</h2>
+  const inicial = usuario.nombre?.charAt(0).toUpperCase() || '?';
 
-      <div>
-        <h3>Datos del usuario</h3>
-        <p><strong>Nombre:</strong> {usuario.nombre}</p>
-        <p><strong>Email:</strong> {usuario.email}</p>
-      </div>
+  return (
+    <section className="perfil-card">
+      <div className="perfil-card__avatar" aria-hidden="true">{inicial}</div>
+
+      <dl className="perfil-card__datos">
+        <div>
+          <dt>Nombre</dt>
+          <dd>{usuario.nombre}</dd>
+        </div>
+
+        <div>
+          <dt>Correo electrónico</dt>
+          <dd>{usuario.email}</dd>
+        </div>
+      </dl>
     </section>
   );
 }
