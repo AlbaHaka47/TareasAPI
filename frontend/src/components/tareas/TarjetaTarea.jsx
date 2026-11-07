@@ -1,37 +1,53 @@
-function TarjetaTarea({ tarea, onEditar, onEliminar }) {
+import { textoPrioridad, estadoFecha, formatearFechaLimite } from '../../utils/tareas';
+
+// Texto del chip de fecha según su estado
+function textoFecha(fecha, estado) {
+  const corta = formatearFechaLimite(fecha);
+
+  if (estado === 'hoy') return 'Vence hoy';
+  if (estado === 'vencida') return `Vencida · ${corta}`;
+  return `Vence el ${corta}`;
+}
+
+function TarjetaTarea({ tarea, onAlternar, onEditar, onEliminar }) {
+  const completada = Boolean(tarea.completada);
+  const prioridad = tarea.prioridad || 'media';
+  const estado = estadoFecha(tarea.fecha_limite, completada);
+
   return (
     <li className={`task ${tarea.completada ? 'task--done' : ''}`}>
       <button
         type="button"
         className="task__check"
-        aria-label={
-          tarea.completada
-            ? 'Tarea completada'
-            : 'Tarea pendiente'
+        onClick={() => onAlternar(tarea.id)}
+        aria-label= {
+          completada
+          ? `Marcar "${tarea.titulo}" como pendiente`
+          : `Marcar "${tarea.titulo}" como completada`
         }
-        aria-pressed={Boolean(tarea.completada)}
-        disabled
+        aria-pressed={completada}
       >
-        {tarea.completada ? '✓' : ''}
+        {completada ? '✓' : ''}
       </button>
 
       <div className="task__body">
         <h3 className="task__title">{tarea.titulo}</h3>
 
         {tarea.descripcion && (
-          <p className="task__description">
-            {tarea.descripcion}
-          </p>
+          <p className="task__description">{tarea.descripcion}</p>
         )}
 
         <div className="task__meta">
-          <span className="task__tag task__tag--personal">
-            Personal
+          <span className={`task__chip task__chip--${prioridad}`}>
+            {textoPrioridad(prioridad)}
           </span>
 
-          <span className="task__date">
-            {tarea.completada ? 'Completada' : 'Pendiente'}
-          </span>
+          {tarea.fecha_limite && (
+            <span className={`task__chip task__chip--fecha ${estado ? `task__chip--${estado}` : ''}`}>
+              <i className="pi pi-calendar" aria-hidden="true"></i>
+              {textoFecha(tarea.fecha_limite, estado)}
+            </span>
+          )}
         </div>
       </div>
 

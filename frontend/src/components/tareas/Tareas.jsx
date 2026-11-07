@@ -1,7 +1,9 @@
 import { useState } from 'react';
 
 import '../../styles/Tareas.scss';
+import '../../styles/Prioridad.scss';
 
+import { estadoFecha } from '../../utils/tareas';
 import useTareas from '../../hooks/useTareas';
 import useFiltroTareas from '../../hooks/useFiltroTareas';
 import CrearTarea from './CrearTarea';
@@ -23,11 +25,11 @@ function mensajeVacio(busqueda, filtro) {
     return 'Todavía no has completado ninguna tarea.';
   }
 
-  return 'Todavía no tienes tareas. ¡Crea la primera!';
+  return 'Escribe arriba tu primera tarea y pulsa Enter.';
 }
 
 function Tareas() {
-  const { tareas, recargar, editar, eliminar } = useTareas();
+  const { tareas, crear, alternar, editar, eliminar } = useTareas();
 
   const {
     filtro,
@@ -39,7 +41,6 @@ function Tareas() {
   } = useFiltroTareas(tareas);
 
   const [tareaEditando, setTareaEditando] = useState(null);
-  const [mostrarCrear, setMostrarCrear] = useState(false);
 
   const guardarEdicion = async (datos) => {
     const guardada = await editar(tareaEditando, datos);
@@ -49,26 +50,20 @@ function Tareas() {
     }
   };
 
-  const tareaCreada = () => {
-    recargar();
-    setMostrarCrear(false);
-  };
+  const vencidas = tareas.filter(
+    (t) => estadoFecha(t.fecha_limite, t.completada) === 'vencida'
+  ).length;
+
+  const completadas = tareas.length - pendientes;
+  const porcentaje = tareas.length ? Math.round((completadas / tareas.length) * 100) : 0;
 
   return (
     <section className="tasks-section">
-      <div className="tasks-toolbar">
-        <button
-          type="button"
-          className="create-task-bubble"
-          onClick={() => setMostrarCrear((actual) => !actual)}
-          aria-expanded={mostrarCrear}
-        >
-          <i className={`pi ${mostrarCrear ? 'pi-times' : 'pi-plus'}`}></i>
-          {mostrarCrear ? 'Cerrar' : 'Crear tarea'}
-        </button>
+      <CrearTarea onCrear={crear} />
 
+      <div className="tasks-toolbar">
         <label className="search">
-          <i className="pi pi-search" />
+          <i className="pi pi-search" />  
           <input
             type="search"
             placeholder="Buscar tarea..."
@@ -79,11 +74,33 @@ function Tareas() {
         </label>
       </div>
 
-      {mostrarCrear && <CrearTarea onTareaCreada={tareaCreada} />}
+      {tareas.length > 0 && (
+        <div className="tasks-progress">
+          <div className="tasks-progress__text">
+            <span>
+              {pendientes === 0
+                ? 'Todo al día'
+                : `${pendientes} ${pendientes === 1 ? 'pendiente' : 'pendientes'}`}
+              {vencidas > 0 && (
+                <span className="tasks-progress__overdue">
+                  {' · '}{vencidas} {vencidas === 1 ? 'vencida' : 'vencidas'}
+                </span>
+              )}
+            </span>
+            <span>{completadas} de {tareas.length} completadas</span>
+          </div>
 
-      <div className="tasks-summary">
-        <span>Tienes {pendientes} tareas pendientes</span>
-      </div>
+          <div
+            className="tasks-progress__bar"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={porcentaje}
+          >
+            <div className="tasks-progress__fill" style={{ width: `${porcentaje}%` }} />
+          </div>
+        </div>
+      )}
 
       <FiltrosTareas
         filtro={filtro}
@@ -110,6 +127,7 @@ function Tareas() {
               <TarjetaTarea
                 key={tarea.id}
                 tarea={tarea}
+                onAlternar={alternar}
                 onEditar={(t) => setTareaEditando(t.id)}
                 onEliminar={eliminar}
               />
