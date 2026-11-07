@@ -14,6 +14,28 @@ function errorServidor(res, error, mensaje) {
     return res.status(500).json({ mensaje });
 }
 
+// La cuenta de demostración es compartida: no se puede editar ni borrar
+async function protegerDemo(req, res, next) {
+    const emailDemo = process.env.DEMO_EMAIL;
+
+    if (!emailDemo) {
+        return next();
+    }
+
+    try {
+        const [filas] = await db.query('SELECT email FROM usuarios WHERE id = ?', [req.usuario.id]);
+
+        if (filas[0]?.email === emailDemo) {
+            return res.status(403).json({
+                mensaje: 'La cuenta de demostración no se puede modificar ni eliminar'
+            });
+        }
+
+        next();
+    } catch (error) {
+        errorServidor(res, error, 'Error al comprobar la cuenta');
+    }
+}
 
 // Obtener el perfil del usuario autenticado
 router.get('/perfil', async (req, res) => {
@@ -43,7 +65,7 @@ router.get('/perfil', async (req, res) => {
 
 
 // Actualizar nombre y email del usuario autenticado
-router.put('/perfil', async (req, res) => {
+router.put('/perfil', protegerDemo, async (req, res) => {
     try {
         const { nombre, email } = req.body;
         const usuarioId = req.usuario.id;
@@ -84,7 +106,7 @@ router.put('/perfil', async (req, res) => {
 
 
 // Eliminar la cuenta del usuario autenticado
-router.delete('/perfil', async (req, res) => {
+router.delete('/perfil', protegerDemo, async (req, res) => {
     const usuarioId = req.usuario.id;
     let connection;
 
