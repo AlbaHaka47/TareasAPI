@@ -1,0 +1,234 @@
+@use 'variables' as *;
+
+// ---------- Tarjeta de cada tarea ----------
+.task {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 20px;
+    transition: background-color 0.15s;
+
+    & + & {
+        border-top: 1px solid $border;
+    }
+
+    &:hover {
+        background-color: $bg;
+    }
+
+    // Círculo para marcar como completada
+    &__check {
+        flex-shrink: 0;
+        display: grid;
+        place-items: center;
+        width: 24px;
+        height: 24px;
+        margin-top: 2px;
+        border: 2px solid $border-input;
+        border-radius: 50%;
+        background-color: transparent;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 0.15s, border-color 0.15s;
+
+        &:hover {
+            border-color: $primary;
+        }
+
+        &:focus-visible {
+            outline: 2px solid $primary;
+            outline-offset: 2px;
+        }
+    }
+
+    &__body {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+    }
+
+    &__title {
+        color: $text;
+        font-size: 11.5pt;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+    &__description {
+        color: $muted;
+        font-size: 10.5pt;
+        overflow-wrap: anywhere;
+    }
+
+    &__meta {
+        margin-top: 4px;
+    }
+
+    // Editar y borrar
+    &__actions {
+        display: flex;
+        gap: 4px;
+    }
+
+    &__action {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 8px;
+        background-color: transparent;
+        color: $muted;
+        font-size: 12pt;
+        cursor: pointer;
+        transition: background-color 0.15s, color 0.15s;
+
+        &:hover {
+            background-color: $primary-soft;
+            color: $primary;
+        }
+
+        &--danger:hover {
+            background-color: $danger-bg;
+            color: $danger;
+        }
+
+        &:focus-visible {
+            outline: 2px solid $primary;
+        }
+    }
+
+    // Tarea completada
+    &--done {
+        .task__check {
+            border-color: $primary;
+            background-color: $primary;
+        }
+
+        .task__title {
+            color: $muted;
+            text-decoration: line-through;
+        }
+    }
+
+    // Modo edición: el formulario ocupa toda la tarjeta
+    &--editing {
+        display: block;
+        background-color: $bg;
+    }
+}
+
+// En pantallas con ratón, los botones aparecen al pasar por encima.
+// En táctiles (sin hover) se ven siempre, porque si no nadie podría pulsarlos.
+@media (hover: hover) {
+    .task__actions {
+        opacity: 0;
+        transition: opacity 0.15s;
+    }
+
+    .task:hover .task__actions,
+    .task:focus-within .task__actions {
+        opacity: 1;
+    }
+}
+
+// ---------- Formulario de edición ----------
+.edit-task-form {
+    display: grid;
+    gap: 12px;
+    width: 100%;
+
+    h3 {
+        color: $text;
+        font-size: 12pt;
+    }
+
+    label {
+        display: grid;
+        gap: 4px;
+        color: $text;
+        font-size: 10pt;
+        font-weight: 600;
+    }
+
+    input[type='text'] {
+        padding: 9px 12px;
+        border: 1px solid $border-input;
+        border-radius: 10px;
+        background-color: $surface;
+        color: $text;
+        font: inherit;
+        font-weight: 400;
+
+        &:focus {
+            border-color: $primary;
+            outline: 0;
+            box-shadow: 0 0 0 3px opacidad($primary, 20%);
+        }
+    }
+
+    label.edit-task-form__check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+    }
+
+    &__actions {
+        display: flex;
+        gap: 10px;
+
+        button {
+            padding: 9px 16px;
+            border: 1px solid $border-input;
+            border-radius: 10px;
+            background-color: transparent;
+            color: $text;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+
+            &[type='submit'] {
+                border-color: $primary;
+                background-color: $primary;
+                color: #fff;
+            }
+        }
+    }
+}
+
+// ---------- Lista vacía y contador ----------
+.tasks-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 48px 20px;
+    border: 1px dashed $border-input;
+    border-radius: 15px;
+    background-color: $surface;
+    color: $muted;
+    text-align: center;
+
+    i {
+        color: $primary;
+        font-size: 28pt;
+    }
+}
+
+.filters__count {
+    margin-left: auto;
+    color: $muted;
+    font-size: 13px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .task,
+    .task__check,
+    .task__action,
+    .task__actions {
+        transition: none;
+    }
+}

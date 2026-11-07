@@ -1,11 +1,4 @@
-// Sustituye estos valores por las variables de tu paleta
-$acento: #4f46e5;
-$borde: #d9dce3;
-$texto: #1f2430;
-$suave: #5b6270;
-$fondo-suave: #f4f5f9;
-$peligro: #b42318;
-$peligro-fondo: #fef3f2;
+@use 'variables' as *;
 
 .cuenta-tabs {
   display: flex;
@@ -14,7 +7,7 @@ $peligro-fondo: #fef3f2;
   padding: 0.25rem;
   overflow-x: auto;
   border-radius: 12px;
-  background: $fondo-suave;
+  background: $surface-alt;
 
   &__tab {
     display: inline-flex;
@@ -26,25 +19,25 @@ $peligro-fondo: #fef3f2;
     border: 0;
     border-radius: 9px;
     background: transparent;
-    color: $suave;
+    color: $muted;
     font: inherit;
     font-weight: 500;
     white-space: nowrap;
     cursor: pointer;
     transition: background 0.15s, color 0.15s;
 
-    &:hover { color: $texto; }
+    &:hover { color: $text; }
 
     &.is-active {
-      background: #fff;
-      color: $acento;
+      background: $surface;
+      color: $primary;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
-    &.is-danger.is-active { color: $peligro; }
+    &.is-danger.is-active { color: $danger; }
 
     &:focus-visible {
-      outline: 2px solid $acento;
+      outline: 2px solid $primary;
       outline-offset: 2px;
     }
   }
@@ -59,9 +52,9 @@ $peligro-fondo: #fef3f2;
   align-items: center;
   gap: 1.5rem;
   padding: 1.5rem;
-  border: 1px solid $borde;
+  border: 1px solid $border-input;
   border-radius: 14px;
-  background: #fff;
+  background: $surface;
 
   &__avatar {
     display: grid;
@@ -70,7 +63,7 @@ $peligro-fondo: #fef3f2;
     width: 4.5rem;
     height: 4.5rem;
     border-radius: 50%;
-    background: $acento;
+    background: $primary;
     color: #fff;
     font-size: 1.75rem;
     font-weight: 700;
@@ -83,7 +76,7 @@ $peligro-fondo: #fef3f2;
     margin: 0;
 
     dt {
-      color: $suave;
+      color: $muted;
       font-size: 0.8rem;
       letter-spacing: 0.04em;
       text-transform: uppercase;
@@ -92,7 +85,7 @@ $peligro-fondo: #fef3f2;
     dd {
       margin: 0.15rem 0 0;
       overflow-wrap: anywhere;
-      color: $texto;
+      color: $text;
       font-size: 1.05rem;
     }
   }
@@ -108,23 +101,23 @@ $peligro-fondo: #fef3f2;
   gap: 0.4rem;
 
   label {
-    color: $texto;
+    color: $text;
     font-size: 0.9rem;
     font-weight: 600;
   }
 
   input {
     padding: 0.7rem 0.85rem;
-    border: 1px solid $borde;
+    border: 1px solid $border-input;
     border-radius: 10px;
-    background: #fff;
-    color: $texto;
+    background: $surface;
+    color: $text;
     font: inherit;
 
     &:focus {
-      border-color: $acento;
+      border-color: $primary;
       outline: 0;
-      box-shadow: 0 0 0 3px rgba($acento, 0.15);
+      box-shadow: 0 0 0 3px opacidad($primary, 15%);
     }
   }
 }
@@ -144,23 +137,23 @@ $peligro-fondo: #fef3f2;
   }
 
   &:focus-visible {
-    outline: 2px solid $acento;
+    outline: 2px solid $primary;
     outline-offset: 2px;
   }
 
-  &--primary { background: $acento; color: #fff; }
-  &--danger { background: $peligro; color: #fff; }
-  &--ghost { border-color: $borde; background: transparent; color: $texto; }
+  &--primary { background: $primary; color: #fff; }
+  &--danger { background: $danger; color: #fff; }
+  &--ghost { border-color: $border-input; background: transparent; color: $text; }
 }
 
 .zona-peligro {
   padding: 1.5rem;
-  border: 1px solid #fecdca;
+  border: 1px solid $danger-border;
   border-radius: 14px;
-  background: $peligro-fondo;
+  background: $danger-bg;
 
-  h2 { margin: 0 0 0.5rem; color: $peligro; font-size: 1.15rem; }
-  p { margin: 0 0 1.25rem; color: $suave; }
+  h2 { margin: 0 0 0.5rem; color: $danger; font-size: 1.15rem; }
+  p { margin: 0 0 1.25rem; color: $muted; }
 
   &__confirmar {
     display: grid;
@@ -168,7 +161,7 @@ $peligro-fondo: #fef3f2;
 
     input {
       padding: 0.7rem 0.85rem;
-      border: 1px solid #fda29b;
+      border: 1px solid $danger-border;
       border-radius: 10px;
       font: inherit;
     }

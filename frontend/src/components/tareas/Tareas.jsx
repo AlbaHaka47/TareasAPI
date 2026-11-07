@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import '../../styles/Tareas.scss';
 import '../../styles/Prioridad.scss';
+import '../../styles/TarjetaTarea.scss';
 
 import { estadoFecha } from '../../utils/tareas';
 import useTareas from '../../hooks/useTareas';

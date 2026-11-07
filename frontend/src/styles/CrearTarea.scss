@@ -1,20 +1,16 @@
-// Sustituye estos valores por las variables de tu paleta (Tareas.scss / Auth.scss)
-$acento: #4f46e5;
-$borde: #d9dce3;
-$texto: #1f2430;
-$error: #b42318;
+@use 'variables' as *;
 
 .quick-add {
   margin-bottom: 1.25rem;
   padding: 0.5rem;
-  border: 1px solid $borde;
+  border: 1px solid $border-input;
   border-radius: 14px;
-  background: #fff;
+  background: $surface;
   transition: border-color 0.15s, box-shadow 0.15s;
 
   &:focus-within {
-    border-color: $acento;
-    box-shadow: 0 0 0 3px rgba($acento, 0.15);
+    border-color: $primary;
+    box-shadow: 0 0 0 3px opacidad($primary, 15%);
   }
 
   &__row {
@@ -25,7 +21,7 @@ $error: #b42318;
 
   &__icon {
     padding-left: 0.5rem;
-    color: $acento;
+    color: $primary;
   }
 
   &__title,
@@ -35,7 +31,7 @@ $error: #b42318;
     border: 0;
     outline: 0;
     background: transparent;
-    color: $texto;
+    color: $text;
     font: inherit;
   }
 
@@ -57,13 +53,13 @@ $error: #b42318;
     border: 0;
     border-radius: 10px;
     background: transparent;
-    color: #6b7280;
+    color: $muted;
     cursor: pointer;
 
     &:hover,
     &[aria-expanded='true'] {
-      background: rgba($acento, 0.1);
-      color: $acento;
+      background: opacidad($primary, 10%);
+      color: $primary;
     }
   }
 
@@ -71,7 +67,7 @@ $error: #b42318;
     padding: 0.6rem 1.1rem;
     border: 0;
     border-radius: 10px;
-    background: $acento;
+    background: $primary;
     color: #fff;
     font: inherit;
     font-weight: 600;
@@ -85,12 +81,12 @@ $error: #b42318;
 
   &__error {
     margin: 0.5rem 0.75rem 0.25rem;
-    color: $error;
+    color: $danger-text;
     font-size: 0.9rem;
   }
 
   button:focus-visible {
-    outline: 2px solid $acento;
+    outline: 2px solid $primary;
     outline-offset: 2px;
   }
 }
@@ -102,7 +98,7 @@ $error: #b42318;
     display: flex;
     justify-content: space-between;
     margin-bottom: 0.4rem;
-    color: #5b6270;
+    color: $muted;
     font-size: 0.9rem;
   }
 
@@ -110,13 +106,13 @@ $error: #b42318;
     height: 6px;
     overflow: hidden;
     border-radius: 99px;
-    background: #e8eaf0;
+    background: $border;
   }
 
   &__fill {
     height: 100%;
     border-radius: 99px;
-    background: $acento;
+    background: $primary;
     transition: width 0.3s ease;
   }
 }

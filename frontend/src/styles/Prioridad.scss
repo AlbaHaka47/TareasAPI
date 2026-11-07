@@ -1,14 +1,4 @@
-// Sustituye estos valores por las variables de tu paleta
-$borde: #d9dce3;
-$suave: #5b6270;
-$acento: #4f46e5;
-
-$alta: #b42318;
-$alta-fondo: #fef3f2;
-$media: #b54708;
-$media-fondo: #fffaeb;
-$baja: #067647;
-$baja-fondo: #ecfdf3;
+@use 'variables' as *;
 
 .task__chip {
   display: inline-flex;
@@ -19,13 +9,13 @@ $baja-fondo: #ecfdf3;
   font-size: 0.78rem;
   font-weight: 600;
 
-  &--alta { background: $alta-fondo; color: $alta; }
-  &--media { background: $media-fondo; color: $media; }
-  &--baja { background: $baja-fondo; color: $baja; }
+  &--alta { background: $prio-alta-bg; color: $prio-alta; }
+  &--media { background: $prio-media-bg; color: $prio-media; }
+  &--baja { background: $prio-baja-bg; color: $prio-baja; }
 
-  &--fecha { background: #f4f5f9; color: $suave; }
-  &--vencida { background: $alta-fondo; color: $alta; }
-  &--hoy { background: $media-fondo; color: $media; }
+  &--fecha { background: $surface-alt; color: $muted; }
+  &--vencida { background: $prio-alta-bg; color: $prio-alta; }
+  &--hoy { background: $prio-media-bg; color: $prio-media; }
 }
 
 .task__meta {
@@ -47,7 +37,7 @@ $baja-fondo: #ecfdf3;
   label {
     display: grid;
     gap: 0.25rem;
-    color: $suave;
+    color: $muted;
     font-size: 0.8rem;
     font-weight: 600;
   }
@@ -55,16 +45,16 @@ $baja-fondo: #ecfdf3;
   select,
   input[type='date'] {
     padding: 0.45rem 0.6rem;
-    border: 1px solid $borde;
+    border: 1px solid $border-input;
     border-radius: 8px;
-    background: #fff;
+    background: $surface;
     color: inherit;
     font: inherit;
     font-weight: 400;
 
     &:focus-visible {
-      border-color: $acento;
-      outline: 2px solid rgba($acento, 0.25);
+      border-color: $primary;
+      outline: 2px solid opacidad($primary, 25%);
     }
   }
 }
@@ -72,6 +62,6 @@ $baja-fondo: #ecfdf3;
 .edit-task-form .task-fields { padding-left: 0; }
 
 .tasks-progress__overdue {
-  color: $alta;
+  color: $prio-alta;
   font-weight: 600;
 }
