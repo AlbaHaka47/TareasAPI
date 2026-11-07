@@ -9,7 +9,7 @@
     justify-content: center;
     align-items: center;
     padding: 30px 15px;
-    background: radial-gradient(circle at 50% 45%, #eceefe 0%, #f6f7fc 60%);    
+    background: radial-gradient(circle at 50% 45%, $gradient-a 0%, $gradient-b 60%);    
     position: relative;
     color: $text;
     font-family: $font;
@@ -29,7 +29,7 @@
             background-color: $primary;
             color: white;
             font-size: 13pt;
-            box-shadow: 0 6px 14px rgba($primary, 0.35);
+            box-shadow: 0 6px 14px opacidad($primary, 35%);
         }
 
         &__name {
@@ -43,12 +43,12 @@
         flex-direction: column;
         gap: 20px;        
         padding: 20px;
-        background-color: white;
+        background-color: $surface;
         border: 1px solid $border;
         border-radius: 15px;
         min-width: 400px;
         min-height: 500px;
-        box-shadow: 0 10px 40px rgba($primary, 0.08), 0 1px 3px rgba($text, 0.04);
+        box-shadow: 0 10px 40px opacidad($primary, 8%), 0 1px 3px opacidad($text, 4%);
         position: relative;
 
         form {
@@ -58,7 +58,7 @@
         }
 
         .auth-toggle {
-            background-color: #f1f2f8;
+            background-color: $surface-alt;
             display: flex;
             flex-direction: row;
             justify-content: space-around;
@@ -72,11 +72,11 @@
                 position: absolute;
                 top: 50%;
                 left: 4px;
-                background-color: white;
+                background-color: $surface;
                 width: 50%;
                 height: 90%;
                 border-radius: 10px;
-                box-shadow: 0 1px 4px rgba($text, 0.12);
+                box-shadow: 0 1px 4px opacidad($text, 12%);
                 transition: transform 0.3s ease-in-out;
 
 
@@ -157,13 +157,13 @@
                     font: inherit;
                     
                     &::placeholder {
-                        color: #a3a8bd;
+                        color: $placeholder;
                     }
 
                     &:focus {
                         transition: 0.2s ease-in-out;
                         border-color: $primary;
-                        box-shadow: 0 0 0 3px rgba($primary, 0.5);
+                        box-shadow: 0 0 0 3px opacidad($primary, 50%);
                     }
                 }
             }
@@ -280,7 +280,7 @@
             gap: 12px;
 
             button {
-                background-color: white;
+                background-color: $surface;
                 display: flex;
                 justify-content: center;
                 align-items: center;

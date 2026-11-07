@@ -1,0 +1,36 @@
+// ---------- Valores reales de la paleta ----------
+// Son variables CSS (custom properties): el navegador las lee en tiempo real,
+// así que se pueden cambiar sin recompilar (lo que necesita el modo oscuro).
+// Las variables de Sass de _variables.scss apuntan a estas.
+:root {
+    --primary: #6558f5;
+    --primary-dark: #5548e6;
+    --primary-soft: #eeecfe;
+    --primary-light: #c9c2ff;
+
+    --bg: #f7f8fc;
+    --surface: #ffffff;
+    --surface-alt: #f1f2f8;
+    --border: #e8eaf2;
+    --border-input: #dfe2ee;
+
+    --text: #14172b;
+    --text-soft: #77758a;
+    --muted: #7c8199;
+    --placeholder: #a3a8bd;
+
+    --danger: #e5484d;
+    --danger-bg: #fff1f2;
+    --danger-border: #fecdd3;
+    --danger-text: #be123c;
+
+    --success: #12a150;
+    --success-bg: #ecfdf5;
+    --success-border: #a7f3d0;
+    --success-text: #047857;
+
+    --gradient-a: #eceefe;
+    --gradient-b: #f6f7fc;
+
+    color-scheme: light;
+}

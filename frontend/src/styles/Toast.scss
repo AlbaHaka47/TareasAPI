@@ -1,8 +1,5 @@
 @use 'variables' as *;
 
-// Verde de éxito. En el paso 4.3 se moverá a _variables.scss con el resto de la paleta
-$exito: #12a150;
-
 // ---------- Avisos flotantes (toasts) ----------
 .toasts {
     position: fixed;
@@ -37,9 +34,9 @@ $exito: #12a150;
     }
 
     &--exito {
-        border-left-color: $exito;
+        border-left-color: $success;
 
-        > i:first-child { color: $exito; }
+        > i:first-child { color: $success; }
     }
 
     &--error {

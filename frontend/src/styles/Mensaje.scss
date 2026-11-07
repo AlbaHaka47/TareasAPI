@@ -1,3 +1,5 @@
+@use 'variables' as *;
+
 // Avisos de éxito y de error (componente Mensaje)
 .mensaje {
     border-radius: 10px;
@@ -6,14 +8,14 @@
     border: 1px solid transparent;
 
     &--error {
-        background-color: #fff1f2;
-        border-color: #fecdd3;
-        color: #be123c;
+        background-color: $danger-bg;
+        border-color: $danger-border;
+        color: $danger-text;
     }
 
     &--exito {
-        background-color: #ecfdf5;
-        border-color: #a7f3d0;
-        color: #047857;
+        background-color: $success-bg;
+        border-color: $success-border;
+        color: $success-text;
     }
 }

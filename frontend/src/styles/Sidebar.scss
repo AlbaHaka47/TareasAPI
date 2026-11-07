@@ -29,7 +29,7 @@
             background-color: $primary;
             color: white;
             font-size: 15px;
-            box-shadow: 0 6px 14px rgba($primary, 0.35);
+            box-shadow: 0 6px 14px opacidad($primary, 35%);
         }
 
         &-text {
@@ -68,7 +68,7 @@
         }
 
         &:hover {
-            background-color: rgba($primary, 0.06);
+            background-color: opacidad($primary, 6%);
             color: $text;
         }
 
@@ -136,7 +136,7 @@
         transition: background-color 0.2s, color 0.2s;
 
         &:hover {
-            background-color: rgba($primary, 0.08);
+            background-color: opacidad($primary, 8%);
             color: $primary;
         }
     }
