@@ -11,9 +11,22 @@ router.use(verificarToken);
 
 // ---------- Funciones auxiliares ----------
 
+const PRIORIDADES = ['baja', 'media', 'alta'];
+
 function errorServidor(res, error, mensaje) {
     console.error(error);
     return res.status(500).json({ mensaje });
+}
+
+// Comprueba que sea una fecha real con formato AAAA-MM-DD (rechaza "2026-02-31")
+function esFechaValida(valor) {
+    if (typeof valor !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
+        return false;
+    }
+
+    const fecha = new Date(`${valor}T00:00:00Z`);
+
+    return !Number.isNaN(fecha.getTime()) && fecha.toISOString().slice(0, 10) === valor;
 }
 
 // Comprueba que el :id de la URL sea un número entero positivo
@@ -46,6 +59,19 @@ function validarTarea(req, res, next) {
         });
     }
 
+    if (prioridad !== undefined && !PRIORIDADES.includes(prioridad)) {
+        return res.status(400).json({
+            mensaje: 'La prioridad debe ser baja, media o alta'
+        });
+    }
+
+    // La fecha es opcional: puede faltar o ser null (sin fecha límite)
+    if (fecha_limite !== undefined && fecha_limite !== null && !esFechaValida(fecha_limite)) {
+        return res.status(400).json({
+            mensaje: 'La fecha límite no es válida (formato AAAA-MM-DD)'
+        });
+    }
+
     next();
 }
 
@@ -66,15 +92,23 @@ function validarCompletada(req, res, next) {
 // Crear una nueva tarea
 router.post('/', validarTarea, async (req, res) => {
     try {
-        const { titulo, descripcion } = req.body;
+        const { titulo, descripcion, prioridad, fecha_limite } = req.body;
         const usuarioId = req.usuario.id;
 
         const sql = `
-            INSERT INTO tareas (titulo, descripcion, usuario_id)
-            VALUES (?, ?, ?)
+            INSERT INTO tareas (titulo, descripcion, prioridad, fecha_limite, usuario_id)
+            VALUES (?, ?, ?, ?, ?)
         `;
 
-        const [resultado] = await db.query(sql, [titulo.trim(), descripcion || null, usuarioId]);
+        const datos = [
+            titulo.trim(),
+            descripcion || null,
+            prioridad || 'media',
+            fecha_limite || null,
+            usuarioId
+        ];
+
+        const [resultado] = await db.query(sql, datos);
 
         res.status(201).json({
             mensaje: 'Tarea creada correctamente',
@@ -90,8 +124,12 @@ router.get('/', async (req, res) => {
     try {
         const usuarioId = req.usuario.id;
 
+        // DATE_FORMAT devuelve la fecha como texto "2026-11-20".
+        // Si no, mysql2 la entrega como objeto Date y la zona horaria puede mover el día.
         const sql = `
-            SELECT id, titulo, descripcion, completada, created_at
+            SELECT id, titulo, descripcion, completada,  prioridad,
+                   DATE_FORMAT(fecha_limite, '%Y-%m-%d') AS fecha_limite,
+                   created_at
             FROM tareas
             WHERE usuario_id = ?
             ORDER BY created_at DESC
@@ -105,19 +143,27 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Actualizar una tarea entera (título, descripción y completada)
+// Actualizar una tarea entera
 router.put('/:id', validarId, validarTarea, validarCompletada, async (req, res) => {
     try {
-        const { titulo, descripcion, completada } = req.body;
+        const { titulo, descripcion, prioridad, fecha_limite, completada } = req.body;
         const usuarioId = req.usuario.id;
 
         const sql = `
             UPDATE tareas
-            SET titulo = ?, descripcion = ?, completada = ?
+            SET titulo = ?, descripcion = ?, prioridad = ?, fecha_limite = ?, completada = ?
             WHERE id = ? AND usuario_id = ?
         `;
 
-        const datos = [titulo.trim(), descripcion || null, completada ? 1 : 0, req.tareaId, usuarioId];
+        const datos = [
+            titulo.trim(),
+            descripcion || null,
+            prioridad || 'media',
+            fecha_limite || null,
+            completada ? 1 : 0,
+            req.tareaId,
+            usuarioId
+        ];
 
         const [resultado] = await db.query(sql, datos);
 
