@@ -8,7 +8,8 @@ function Campo({
   placeholder,
   valor,
   onChange,
-  children
+  children,
+  ...inputProps
 }) {
   return (
     <div className="authInput">
@@ -23,6 +24,7 @@ function Campo({
           placeholder={placeholder}
           value={valor}
           onChange={(e) => onChange(e.target.value)}
+          {...inputProps}
         />
 
         {children}

@@ -28,6 +28,12 @@ function Auth({ onLogin }) {
     limpiar();
   };
 
+  // Tras registrarse, pasamos al login y dejamos el aviso visible
+  const alRegistrarse = (texto) => {
+    setModo('login');
+    mostrarExito(texto);
+  };
+
   return (
     <main className="auth">
 
@@ -75,13 +81,13 @@ function Auth({ onLogin }) {
           />
         ) : (
           <RegisterForm
-            mostrarExito={mostrarExito}
+            onRegistrado={alRegistrarse}
             mostrarError={mostrarError}
             limpiar={limpiar}
           />
         )}
 
-        <p className="divider">O continúa con</p>
+       {/* <p className="divider">O continúa con</p>
 
         <div className="social">
           <button type="button">
@@ -92,7 +98,7 @@ function Auth({ onLogin }) {
             <i className="pi pi-github"></i>
             GitHub
           </button>
-        </div>
+        </div> */}
 
       </div>
 

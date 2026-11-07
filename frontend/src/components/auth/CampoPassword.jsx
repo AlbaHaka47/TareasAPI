@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Campo from './Campo';
 
 // Campo de contraseña con el ojo para mostrarla u ocultarla
-function CampoPassword({ valor, onChange }) {
+function CampoPassword({ valor, onChange, autoComplete = 'current-password', ...resto }) {
   const [visible, setVisible] = useState(false);
 
   return (
@@ -15,6 +15,9 @@ function CampoPassword({ valor, onChange }) {
       placeholder="••••••••"
       valor={valor}
       onChange={onChange}
+      autoComplete={autoComplete}
+      required
+      {...resto}
     >
       <button
         type="button"

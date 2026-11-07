@@ -5,25 +5,25 @@ import { textoDeError } from '../../utils/errores';
 import Campo from './Campo';
 import CampoPassword from './CampoPassword';
 
-function RegisterForm({ mostrarExito, mostrarError, limpiar }) {
+function RegisterForm({ onRegistrado, mostrarError, limpiar }) {
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [enviando, setEnviando] = useState(false);
 
   const enviar = async (e) => {
     e.preventDefault();
     limpiar();
+    setEnviando(true);
 
     try {
-      const respuesta = await registro({ nombre, email, password });
-
-      mostrarExito(respuesta.data.mensaje);
-
-      setNombre('');
-      setEmail('');
-      setPassword('');
+      await registro({ nombre, email, password });
+      
+      // El padre cambia a "Iniciar sesión" y muestra el aviso de éxito
+      onRegistrado('Cuenta creada. Ya puedes iniciar sesión.');
     } catch (error) {
-      mostrarError(textoDeError(error, 'Error al registrarse'));
+      mostrarError(textoDeError(error, 'No se pudo crear la cuenta'));
+      setEnviando(false);
     }
   };
 
@@ -36,6 +36,8 @@ function RegisterForm({ mostrarExito, mostrarError, limpiar }) {
         placeholder="Tu nombre"
         valor={nombre}
         onChange={setNombre}
+        autoComplete="name"
+        required
       />
 
       <Campo
@@ -46,18 +48,25 @@ function RegisterForm({ mostrarExito, mostrarError, limpiar }) {
         placeholder="ejemplo@correo.com"
         valor={email}
         onChange={setEmail}
+        autoComplete="email"
+        required
       />
 
-      <CampoPassword valor={password} onChange={setPassword} />
+      <CampoPassword
+        valor={password}
+        onChange={setPassword}
+        autoComplete="new-password"
+        minLength={6}
+      />
 
-      <label className="agree" htmlFor="agree">
+      {/* <label className="agree" htmlFor="agree">
         <input type="checkbox" name="agree" id="agree" />
         Acepto los términos y condiciones
-      </label>
+      </label> */}
 
-      <button className="submit" type="submit">
-        Crear Cuenta
-        <i className="pi pi-arrow-right"></i>
+      <button className="submit" type="submit" disabled={enviando}>
+        {enviando ? 'Creando cuenta…' : 'Crear Cuenta'}
+        {!enviando && <i className="pi pi-arrow-right"></i>}
       </button>
     </form>
   );
