@@ -8,10 +8,12 @@ import {
   eliminarTarea
 } from '../services/tareasService';
 import { textoDeError } from '../utils/errores';
+import useToast from './useToast';
 
 // Guarda la lista de tareas y las operaciones para cambiarla
 function useTareas() {
   const [tareas, setTareas] = useState([]);
+  const { mostrarExito, mostrarError } = useToast();
 
   // Al abrir la pantalla, cargamos la lista.
   // "cancelado" evita guardar la respuesta si el componente ya se ha desmontado
@@ -28,6 +30,7 @@ function useTareas() {
         }
       } catch (error) {
         console.error(error);
+        mostrarError('No se pudieron cargar las tareas');
       }
     };
 
@@ -36,7 +39,7 @@ function useTareas() {
     return () => {
       cancelado = true;
     };
-  }, []);
+  }, [mostrarError]);
 
   // Crea la tarea y la añade arriba de la lista sin volver a pedirlas todas.
   // Devuelve { ok: true } o { ok: false, error: 'texto' }
@@ -87,6 +90,8 @@ function useTareas() {
         actuales.map((t) => (t.id === id ? { ...t, completada: anterior } : t))
       );
 
+      mostrarError('No se pudo actualizar la tarea');
+
       return false;
     }
   };
@@ -101,9 +106,12 @@ function useTareas() {
         )
       );
 
+      mostrarExito('Tarea actualizada');
+
       return true;
     } catch (error) {
       console.error(error);
+      mostrarError(textoDeError(error, 'No se pudo guardar la tarea'));
       return false;
     }
   };
@@ -112,9 +120,11 @@ function useTareas() {
     try {
       await eliminarTarea(id);
       setTareas((actuales) => actuales.filter((tarea) => tarea.id !== id));
+      mostrarExito('Tarea eliminada');
       return true;
     } catch (error) {
       console.error(error);
+      mostrarError('No se pudo eliminar la tarea');
       return false;
     }
   };

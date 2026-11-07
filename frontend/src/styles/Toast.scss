@@ -1,0 +1,91 @@
+@use 'variables' as *;
+
+// Verde de éxito. En el paso 4.3 se moverá a _variables.scss con el resto de la paleta
+$exito: #12a150;
+
+// ---------- Avisos flotantes (toasts) ----------
+.toasts {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: min(360px, calc(100vw - 40px));
+    pointer-events: none; // el contenedor no bloquea clics; cada aviso sí
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid $border;
+    border-left-width: 4px;
+    border-radius: 12px;
+    background-color: $surface;
+    color: $text;
+    font-family: $font;
+    font-size: 10.5pt;
+    box-shadow: 0 10px 30px rgba(20, 23, 43, 0.12);
+    pointer-events: auto;
+    animation: toast-entrada 0.25s ease-out;
+
+    > i:first-child {
+        font-size: 16pt;
+    }
+
+    &--exito {
+        border-left-color: $exito;
+
+        > i:first-child { color: $exito; }
+    }
+
+    &--error {
+        border-left-color: $danger;
+
+        > i:first-child { color: $danger; }
+    }
+
+    &__texto {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__close {
+        padding: 6px;
+        border: none;
+        border-radius: 8px;
+        background: transparent;
+        color: $muted;
+        cursor: pointer;
+
+        &:hover {
+            background-color: $primary-soft;
+            color: $primary;
+        }
+
+        &:focus-visible {
+            outline: 2px solid $primary;
+        }
+    }
+}
+
+@keyframes toast-entrada {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .toast {
+        animation: none;
+    }
+}
