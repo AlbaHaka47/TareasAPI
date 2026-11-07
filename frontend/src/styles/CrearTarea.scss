@@ -1,0 +1,139 @@
+// Sustituye estos valores por las variables de tu paleta (Tareas.scss / Auth.scss)
+$acento: #4f46e5;
+$borde: #d9dce3;
+$texto: #1f2430;
+$error: #b42318;
+
+.quick-add {
+  margin-bottom: 1.25rem;
+  padding: 0.5rem;
+  border: 1px solid $borde;
+  border-radius: 14px;
+  background: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:focus-within {
+    border-color: $acento;
+    box-shadow: 0 0 0 3px rgba($acento, 0.15);
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__icon {
+    padding-left: 0.5rem;
+    color: $acento;
+  }
+
+  &__title,
+  &__description {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: $texto;
+    font: inherit;
+  }
+
+  &__title {
+    padding: 0.7rem 0.25rem;
+    font-size: 1.05rem;
+  }
+
+  &__description {
+    width: 100%;
+    margin-top: 0.25rem;
+    padding: 0.5rem 0.75rem 0.5rem 2.1rem;
+    font-size: 0.95rem;
+  }
+
+  &__more {
+    width: 2.4rem;
+    height: 2.4rem;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: #6b7280;
+    cursor: pointer;
+
+    &:hover,
+    &[aria-expanded='true'] {
+      background: rgba($acento, 0.1);
+      color: $acento;
+    }
+  }
+
+  &__submit {
+    padding: 0.6rem 1.1rem;
+    border: 0;
+    border-radius: 10px;
+    background: $acento;
+    color: #fff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+  }
+
+  &__error {
+    margin: 0.5rem 0.75rem 0.25rem;
+    color: $error;
+    font-size: 0.9rem;
+  }
+
+  button:focus-visible {
+    outline: 2px solid $acento;
+    outline-offset: 2px;
+  }
+}
+
+.tasks-progress {
+  margin-bottom: 1rem;
+
+  &__text {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+    color: #5b6270;
+    font-size: 0.9rem;
+  }
+
+  &__bar {
+    height: 6px;
+    overflow: hidden;
+    border-radius: 99px;
+    background: #e8eaf0;
+  }
+
+  &__fill {
+    height: 100%;
+    border-radius: 99px;
+    background: $acento;
+    transition: width 0.3s ease;
+  }
+}
+
+.task__check {
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quick-add,
+  .tasks-progress__fill {
+    transition: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .quick-add__submit {
+    padding: 0.6rem 0.8rem;
+  }
+}

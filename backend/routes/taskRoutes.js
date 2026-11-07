@@ -45,7 +45,7 @@ function validarId(req, res, next) {
 
 // Comprueba el título y la descripción
 function validarTarea(req, res, next) {
-    const { titulo, descripcion } = req.body;
+    const { titulo, descripcion, prioridad, fecha_limite } = req.body;
 
     if (typeof titulo !== 'string' || titulo.trim() === '') {
         return res.status(400).json({
